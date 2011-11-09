@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.bukkit.skaor.bagcraft;
 
 import com.nijikokun.register.payment.Methods;
@@ -11,8 +7,9 @@ import org.bukkit.event.server.ServerListener;
 
 /**
  *
- * @author Skaor
+ * @author Nicolas Girot
  */
+
 public class BagcraftServerEconomy extends ServerListener {
     private Bagcraft plugin;
 
@@ -22,7 +19,6 @@ public class BagcraftServerEconomy extends ServerListener {
 
     @Override
     public void onPluginDisable(PluginDisableEvent event) {
-        // Check to see if the plugin thats being disabled is the one we are using
         if (Methods.hasMethod()) {
             if(Methods.checkDisabled(event.getPlugin())) {
                 Methods.reset();
@@ -34,7 +30,6 @@ public class BagcraftServerEconomy extends ServerListener {
 
     @Override
     public void onPluginEnable(PluginEnableEvent event) {
-        // Check to see if we need a payment method
         if (!Methods.hasMethod() && Methods.setMethod(plugin.getServer().getPluginManager())) {
             plugin.method = Methods.getMethod();
             System.out.println("[" + plugin.getDescription().getName() + "] Payment method found (" + Methods.getMethod().getName() + " version: " + Methods.getMethod().getVersion() + ")");

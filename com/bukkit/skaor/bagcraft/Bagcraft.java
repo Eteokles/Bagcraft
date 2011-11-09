@@ -4,18 +4,7 @@ import com.nijikokun.register.payment.Method;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Result;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -31,32 +20,29 @@ import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-import org.xml.sax.SAXException;
 
 /**
  *
- * @author Skaor
+ * @author Nicolas Girot
  */
+
 public class Bagcraft extends JavaPlugin {
     private final String PLAYER_FILE = "bagcraft.xml";
     private final String CONFIG_FILE = "config.yml";
     
-    public YamlConfiguration configuration_g;
     private File configuration_g_File;
-    
     private File m_folder;
-
-    //public Configuration configBagcraft;
-    public Method method;
     
+    public YamlConfiguration configuration_g;
+    public Method method;
     public BagcraftPlayerControl playerControl = new BagcraftPlayerControl(this);
     public BagCraftLoadSave loadSave = new BagCraftLoadSave(this);
 
     public void onEnable() {
         PluginManager pm = getServer().getPluginManager();
         
-        this.getServer().getPluginManager().registerEvent(Type.PLUGIN_ENABLE, new BagcraftServerEconomy(this), Priority.Low, this);
-        this.getServer().getPluginManager().registerEvent(Type.PLUGIN_DISABLE, new BagcraftServerEconomy(this), Priority.Low, this);
+        pm.registerEvent(Type.PLUGIN_ENABLE, new BagcraftServerEconomy(this), Priority.Low, this);
+        pm.registerEvent(Type.PLUGIN_DISABLE, new BagcraftServerEconomy(this), Priority.Low, this);
         
         m_folder = getDataFolder();
         if (!m_folder.exists())
@@ -65,20 +51,16 @@ public class Bagcraft extends JavaPlugin {
           m_folder.mkdir();
           System.out.println("BagCraft: folder created.");
         }
-        /*Creation du fichier joueurs*/
-        File playerbdd = new File(m_folder.getAbsolutePath() + File.separator + PLAYER_FILE);
-        /*Creation du fichier de configuration du Plugin*/
         
+        /* Player XML file (use Jdom) */
+        File playerbdd = new File(m_folder.getAbsolutePath() + File.separator + PLAYER_FILE);        
         if (!playerbdd.exists()) {
             System.out.print("BagCraft : No player file...");
             try {
-                
                 Element root = new Element("players");
                 Document document = new Document(root); 
-                
                 bagcraftSaveXml(document);
                 System.out.println("BagCraft : Player file has been created.");
-                
             } catch (Exception e) {
                 System.out.println("Error at the creation of player file.");
             }
@@ -89,14 +71,12 @@ public class Bagcraft extends JavaPlugin {
         
         configFileFirstLoad();
         
-        //playerControl.configVerification();
-        
         PluginDescriptionFile pdfFile = this.getDescription();
         System.out.println( pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled!" );
     }
     
     private void configFileFirstLoad() {
-        if(!configuration_g_File.exists()){                        // checks if the yaml does not exists
+        if(!configuration_g_File.exists()){
             configuration_g.set("use-iConomy", false);
             configuration_g.set("bag.first-bag-free", false);
             configuration_g.set("bag.price-multiplicator", 1);
@@ -105,8 +85,6 @@ public class Bagcraft extends JavaPlugin {
             configuration_g.set("playername.slot-limit", 9);
             System.out.println("Bagraft : sauvegarde du fichier de configuration.");
             saveYamls();
-            //configuration_g_File.getParentFile().mkdirs();         // creates the /plugins/<pluginName>/ directory if not found
-            //copy(getResource("config.yml"), configuration_g_File); // copies the yaml from your jar to the folder /plugin/<pluginName>
         } else {
             loadYamls();
         }
@@ -122,7 +100,7 @@ public class Bagcraft extends JavaPlugin {
         {
           return false;
         } else {
-            Player player = (Player)sender; //On recupere le joueur qui a lancer la commande.
+            Player player = (Player)sender;
             if (player.hasPermission("bagcraft.usebagcraft")) {
                 if (args.length == 3) {
                     if (args[0].compareToIgnoreCase("Set") == 0) {
@@ -168,7 +146,7 @@ public class Bagcraft extends JavaPlugin {
             sortie.output(document, new FileOutputStream(new File(m_folder.getAbsolutePath() + File.separator + PLAYER_FILE)));
             return true;
         } catch (IOException e) {
-            System.out.println("BagCraft: error at save player file.");
+            System.out.println("BagCraft: error when saving player file.");
             return false;
         }
         
@@ -189,14 +167,14 @@ public class Bagcraft extends JavaPlugin {
         try {
             configuration_g.load(configuration_g_File);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("BagCraft: error at load configuration file.");
         }
     }
     public void saveYamls() {
         try {
             configuration_g.save(configuration_g_File);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("BagCraft: error when saving configuration file.");
         }
     }
 }

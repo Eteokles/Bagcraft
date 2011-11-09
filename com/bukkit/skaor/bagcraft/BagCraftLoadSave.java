@@ -16,8 +16,9 @@ import org.jdom.Element;
 
 /**
  *
- * @author Skaor
+ * @author Nicolas Girot
  */
+
 public class BagCraftLoadSave {
 
     private final Bagcraft plugin;

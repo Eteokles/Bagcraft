@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.bukkit.skaor.bagcraft;
 
 import java.util.Iterator;
@@ -10,11 +6,11 @@ import org.bukkit.ChatColor;
 import org.jdom.Document;
 import org.jdom.Element;
 
-
 /**
  *
- * @author famille
+ * @author Nicolas Girot
  */
+
 public class BagcraftPlayerControl {
 
     private final Bagcraft plugin;
