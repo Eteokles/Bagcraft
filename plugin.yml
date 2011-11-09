@@ -1,0 +1,24 @@
+name: Bagcraft
+main: com.bukkit.skaor.bagcraft.Bagcraft
+version: 0.91
+website: http://www.skaor-world.com
+author: Skaor
+commands:
+  bagcraft:
+    description: Bagcraft. Use command on chest.
+    usage: |
+      /<command> Save X - Save the target chest in bag X (1-9)
+      /<command> Load X - Load the bag X (1-9) in target chest.
+
+permissions:
+  bagcraft.*:
+    description: Give access on all command for Bagcraft.
+    children:
+      bagcraft.usebagcraft: true
+      bagcraft.buybag: true
+  bagcraft.usebagcraft:
+    description: Allow player to use Bagcraft.
+    default: true
+  bagcraft.buybag:
+    description: Allow player to buy a new bag.
+    default: true
