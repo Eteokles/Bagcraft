@@ -31,18 +31,24 @@ public class Bagcraft extends JavaPlugin {
     private final String CONFIG_FILE = "config.yml";
     
     private File configuration_g_File;
-    private File m_folder;
+    public File m_folder;
     
     public YamlConfiguration configuration_g;
     public Method method;
-    public BagcraftPlayerControl playerControl = new BagcraftPlayerControl(this);
-    public BagCraftLoadSave loadSave = new BagCraftLoadSave(this);
-
+    
+    private BagcraftCommandManager commandManager;
+    public BagcraftPlayerControl playerControl;
+    public BagCraftLoadSave loadSave;
+    
     public void onEnable() {
         PluginManager pm = getServer().getPluginManager();
         
         pm.registerEvent(Type.PLUGIN_ENABLE, new BagcraftServerEconomy(this), Priority.Low, this);
         pm.registerEvent(Type.PLUGIN_DISABLE, new BagcraftServerEconomy(this), Priority.Low, this);
+        
+        commandManager = new BagcraftCommandManager(this);
+        playerControl = new BagcraftPlayerControl(this);
+        loadSave = new BagCraftLoadSave(this);
         
         m_folder = getDataFolder();
         if (!m_folder.exists())
@@ -96,44 +102,22 @@ public class Bagcraft extends JavaPlugin {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
+        boolean canUseBagcraft;
+        
         if (args.length < 1 )
         {
           return false;
         } else {
             Player player = (Player)sender;
-            if (player.hasPermission("bagcraft.usebagcraft")) {
-                if (args.length == 3) {
-                    if (args[0].compareToIgnoreCase("Set") == 0) {
-                        player.sendMessage(playerControl.setConfiguration(args[1], args[2]));
-                    }  
-                } else if (args.length == 2) {
-                    if (args[0].compareToIgnoreCase("Save") == 0 && Integer.parseInt(args[1]) > 0 ) {
-                        player.sendMessage(loadSave.saveBag(player,m_folder,args[1]));
-                    } else if (args[0].compareToIgnoreCase("Load") == 0 && Integer.parseInt(args[1]) > 0 ) {
-                        player.sendMessage(loadSave.loadBag(player,m_folder,args[1]));
-                    } else {
-                        return false;
-                    }
-                } else if (args.length == 1) { 
-                    if (args[0].compareToIgnoreCase("LimitBag") == 0) {
-                        player.sendMessage(ChatColor.YELLOW + "Bagcraft : You are limited to " + playerControl.playerNbrSlot(player.getName()));
-                    } else if(args[0].compareToIgnoreCase("BuyBag") == 0) {
-                        if (configuration_g.getBoolean("use-iConomy") == true) {
-                            loadSave.buyBag(player);
-                        } else {
-                            player.sendMessage(ChatColor.RED + "Bagcraft : Command disabled. iConomy isn't activated." );
-                        }
-                    } else {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
+            canUseBagcraft = player.hasPermission("bagcraft.usebagcraft");
+
+            if (canUseBagcraft) {
+                    return commandManager.userCommand(player, args);
             } else {
                 player.sendMessage(ChatColor.RED + "BagCraft : You are not allowed to use this plugin.");
+                return true;
             }
         }
-        return true;
     }
     
     public File getFolder() {
